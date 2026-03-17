@@ -34,7 +34,6 @@ Asset Vault is available in two versions. The Lite version is free and covers ba
 | **Nested Subfolder Scanning** | ❌ | ✔️ |
 
 *[Link to Pro Version on Creator Store](https://create.roblox.com/store/asset/95303596935746/Asset-Vault)*
-
 *[Link to Lite Version on Creator Store](https://create.roblox.com/store/asset/90655683119542/Asset-Vault-Lite)*
 ---
 
