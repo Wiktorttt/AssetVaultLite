@@ -1,7 +1,7 @@
 # Asset Vault Lite for Roblox Studio
 
 [![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg)]()
-[![License](https://img.shields.io/badge/License-MIT-green.svg)]()
+[![License](https://img.shields.io/badge/License-Proprietary_Commercial-green.svg)]()
 [![Creator Store](https://img.shields.io/badge/Get_Lite_on-Creator_Store-orange.svg)](https://create.roblox.com/store/asset/90655683119542/Asset-Vault-Lite)
 [![Creator Store Pro](https://img.shields.io/badge/Get_Pro_on-Creator_Store-orange.svg)](https://create.roblox.com/store/asset/95303596935746/Asset-Vault)
 
@@ -13,15 +13,15 @@ Asset Vault Lite is a custom asset management system for Roblox Studio, designed
 
 ## ⚙️ Features
 
-* **Visual Grid Interface:** Browse your Models, Parts, Decals, Sounds, Textures, and SurfaceAppearances with automatically generated 3D viewport thumbnails.
-* **Rapid Deployment:** Insert assets into the workspace via drag-and-drop or a click-to-place system.
-* **Smart Placement Rules:** Automatically align placed assets to surface normals and automatically anchor BaseParts upon insertion.
-* **Advanced Filtering & Search:** Instantly locate assets using text search and category filters (Models, Meshes, Audio, Images).
+* **Visual Grid Interface:** Browse your Models with auto-generated 3D viewport thumbnails.
+* **Rapid Deployment:** Insert assets into the workspace via drag-and-drop or system.
+* **Smart Placement Rules:** Automatically align placed assets to surface normals (optional).
+* **Advanced Filtering & Search:** Instantly locate assets using text search and category filters.
 * **Quick Access Tabs:** Quickly retrieve recently used items or pin frequently used assets to your Favorites.
 
 ---
 
-## 📊 Editions: Lite vs. Pro
+## 📊 Lite vs. Pro
 
 Asset Vault is available in two versions. The Lite version is free and covers basic asset management, while the Pro version removes limitations for power users.
 
@@ -35,19 +35,20 @@ Asset Vault is available in two versions. The Lite version is free and covers ba
 
 *[Link to Pro Version on Creator Store](https://create.roblox.com/store/asset/95303596935746/Asset-Vault)*
 
+*[Link to Lite Version on Creator Store](https://create.roblox.com/store/asset/90655683119542/Asset-Vault-Lite)*
 ---
 
 ## 🚀 Installation
 
 ### Option 1: Itch.io
-1. Purchase and download the latest `AssetVaultLite.rbxm` file from the [Itch.io](https://google.com) page.
+1. Purchase and download the latest `AssetVault.rbxm` file from the [Itch.io](https://google.com) page.
 2. Open Roblox Studio.
 3. Drag and drop the `.rbxm` file into the `Plugins` folder located in your local Roblox Studio directory (`%localappdata%\Roblox\Plugins`).
 4. Refresh Roblox Studio
 
 ### Option 2: Roblox Creator Store
-1. Go to the [Asset Vault page]([INSERT_CREATOR_STORE_LINK]) on the Roblox Creator Store.
-2. Click **Get** to add it to your inventory.
+1. Go to the [Asset Vault page](https://create.roblox.com/store/asset/95303596935746/Asset-Vault) on the Roblox Creator Store.
+2. Click **Purchase** to add it to your inventory.
 3. Open Roblox Studio, navigate to the **Plugins** tab, and click **Manage Plugins**.
 4. Enable Asset Vault.
 ---
@@ -61,6 +62,11 @@ Asset Vault is available in two versions. The Lite version is free and covers ba
 5. **Configure:** Click the gear icon to toggle settings.
 ---
 
-## 🧾 License
-The Asset Vault Lite version is under MIT License.
+## 📜 License
+
+**Asset Vault Pro** is proprietary software. Purchase of the plugin grants a non-exclusive, non-transferable license to use the software for game development within Roblox Studio. Redistribution, modification for resale, or sharing of the source code is prohibited.
+
+**Asset Vault Lite** code is provided for inspection and personal use within the Asset Vault Lite plugin. Modification, reverse engineering, or redistribution is prohibited.
+
+Copyright 2026, wiktorttt. All Rights Reserved.
 ---
