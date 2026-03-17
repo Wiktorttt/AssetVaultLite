@@ -1,12 +1,13 @@
-# Asset Vault for Roblox Studio
+# Asset Vault Lite for Roblox Studio
 
 [![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg)]()
 [![License](https://img.shields.io/badge/License-MIT-green.svg)]()
-[![Creator Store](https://img.shields.io/badge/Get_on-Creator_Store-orange.svg)](https://create.roblox.com/store/asset/90655683119542/Asset-Vault-Lite)
+[![Creator Store](https://img.shields.io/badge/Get_Lite_on-Creator_Store-orange.svg)](https://create.roblox.com/store/asset/90655683119542/Asset-Vault-Lite)
+[![Creator Store Pro](https://img.shields.io/badge/Get_Pro_on-Creator_Store-orange.svg)](https://create.roblox.com/store/asset/95303596935746/Asset-Vault)
 
-Asset Vault is a custom asset management system for Roblox Studio, designed to replicate the efficiency of Unity's built-in asset browser. It allows developers to catalog, organize, and deploy instances without cluttering the standard Explorer.
+Asset Vault Lite is a custom asset management system for Roblox Studio, designed to replicate the efficiency of Unity's built-in asset browser. It allows developers to catalog, organize, and deploy instances without cluttering the standard Explorer.
 
-![Asset Vault Hero Image]([INSERT_IMAGE_OR_GIF_LINK_HERE])
+![Asset Vault Hero](https://raw.githubusercontent.com/Wiktorttt/AssetVaultLite/refs/heads/main/AVBanner.png)
 
 ---
 
@@ -32,14 +33,14 @@ Asset Vault is available in two versions. The Lite version is free and covers ba
 | **Root Library Folders** | Max 1 | Unlimited |
 | **Nested Subfolder Scanning** | ❌ | ✔️ |
 
-*[Link to Pro Version on Creator Store]([INSERT_PRO_LINK])*
+*[Link to Pro Version on Creator Store](https://create.roblox.com/store/asset/95303596935746/Asset-Vault)*
 
 ---
 
 ## 🚀 Installation
 
 ### Option 1: Itch.io
-1. Purchase and download the latest `AssetVault.rbxm` file from the [Itch.io]([INSERT_GITHUB_RELEASES_LINK]) page.
+1. Purchase and download the latest `AssetVaultLite.rbxm` file from the [Itch.io](https://google.com) page.
 2. Open Roblox Studio.
 3. Drag and drop the `.rbxm` file into the `Plugins` folder located in your local Roblox Studio directory (`%localappdata%\Roblox\Plugins`).
 4. Refresh Roblox Studio
@@ -58,5 +59,8 @@ Asset Vault is available in two versions. The Lite version is free and covers ba
 3. **Browse:** Use the search bar or category filters on the left to find your asset.
 4. **Deploy:** Click and drag an item from the grid into the 3D viewport. The asset will follow your cursor. Left-click to place, middle-click to cancel.
 5. **Configure:** Click the gear icon to toggle settings.
+---
 
+## 🧾 License
+The Asset Vault Lite version is under MIT License.
 ---
