@@ -2,7 +2,7 @@
 
 [![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg)]()
 [![License](https://img.shields.io/badge/License-MIT-green.svg)]()
-[![Creator Store](https://img.shields.io/badge/Get_on-Creator_Store-orange.svg)]([https://create.roblox.com/store/asset/90655683119542/Asset-Vault-Lite])
+[![Creator Store](https://img.shields.io/badge/Get_on-Creator_Store-orange.svg)](https://create.roblox.com/store/asset/90655683119542/Asset-Vault-Lite)
 
 Asset Vault is a custom asset management system for Roblox Studio, designed to replicate the efficiency of Unity's built-in asset browser. It allows developers to catalog, organize, and deploy instances without cluttering the standard Explorer.
 
