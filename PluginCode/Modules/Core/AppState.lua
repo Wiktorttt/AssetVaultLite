@@ -39,7 +39,8 @@ local defaultSettings = {
 	["ShowInstanceColors"] = false,
 	["AlignToNormal"] = true,
 	["AutoAnchor"] = true,
-	["GridSize"] = .5
+	["GridSize"] = .5,
+	["InstantSearch"] = false
 }
 
 -----------------------------
@@ -133,6 +134,10 @@ function App.setSettings(array)
 		userSettings.AutoAnchor = array.AutoAnchor
 		changed = true
 	end
+	if array.InstantSearch ~= nil then
+		userSettings.InstantSearch = array.InstantSearch
+		changed = true
+	end
 	if changed then
 		Signals.settingsChanged:Fire(array)
 		App.saveData()
@@ -149,7 +154,10 @@ function App.getSource(): (string, Instance?)
 	else
 		return userSettings.CurrentSource
 	end
-	
+end
+
+function App.getInstanceByUUID(uuid:string): Instance
+	return getInstanceBySource(uuid)
 end
 
 function App.getCategoryFilter(): string
@@ -176,12 +184,14 @@ function App.getSettings()
 	local array = {
 		["ShowInstanceColors"] = userSettings.ShowInstanceColors,
 		["AlignToNormal"] = userSettings.AlignToNormal,
-		["AutoAnchor"] = userSettings.AutoAnchor
+		["AutoAnchor"] = userSettings.AutoAnchor,
+		["InstantSearch"] = userSettings.InstantSearch
 	}
 
 	if array.ShowInstanceColors == nil then array.ShowInstanceColors = defaultSettings.ShowInstanceColors end
 	if array.AlignToNormal == nil then array.AlignToNormal = defaultSettings.AlignToNormal end
 	if array.AutoAnchor == nil then array.AutoAnchor = defaultSettings.AutoAnchor end
+	if array.InstantSearch == nil then array.InstantSearch = defaultSettings.InstantSearch end
 
 	return array
 end

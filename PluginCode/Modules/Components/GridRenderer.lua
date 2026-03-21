@@ -27,12 +27,15 @@ local Vault = require(MODULES.Core.VaultData)
 local MAIN_DATA = Pathfinder:get("MAIN")
 local IMPORT_DATA = Pathfinder:get("IMPORT")
 local mainGui : mainSchema = MAIN_DATA.UI
+local currentLibrary = mainGui.Main.CurrentLibrary
 
-local GRID_SCROLL = mainGui.Main.CurrentLibrary.Grid
+local GRID_SCROLL = currentLibrary.Grid
 
 local GRID_FRAME = ASSETS.ObjectFrame
 
 local GRID_LAYOUT = GRID_SCROLL.UIGridLayout
+
+local assetCounterText = currentLibrary.ItemsCountFrame.TextLabel
 
 local currentSearchQuery = nil
 local currentFilter = nil
@@ -101,7 +104,6 @@ local function sortChildrenByInstance(children)
 		local priorityA = CLASS_PRIORITY[a.ClassName] or DEFAULT_PRIORITY
 		local priorityB = CLASS_PRIORITY[b.ClassName] or DEFAULT_PRIORITY
 
-		-- Secondary sort: If classes are the same, sort alphabetically
 		if priorityA == priorityB then
 			return a.Name:lower() < b.Name:lower()
 		end
@@ -123,6 +125,12 @@ local function updateSelectionOnObjectClick(objFrame:Frame, inputObj:InputObject
 		if child == objFrame then continue end
 		child:RemoveTag("ObjSelected")
 	end
+end
+
+local function updateAssetCounter()
+	local children = GRID_SCROLL:GetChildren()
+
+	assetCounterText.Text = ` {#children - 2} items`
 end
 -----------------------------
 -- MAIN --
@@ -219,7 +227,7 @@ local function onSourceChanged()
 	if inBuiltFolder and inBuiltSource == "TOOLBOX" then
 		cleanupGrid()
 		Signals.updateGridTexts:Fire("TEMP")
-		--do something here for these three
+		--potential toolbox update
 		return
 	end
 	if source == "None" then return end
@@ -320,6 +328,8 @@ local function onSourceChanged()
 	else
 		Signals.updateGridTexts:Fire("EmptyFolder")
 	end
+	
+	updateAssetCounter()
 end
 
 local function onSearchQueryChanged()

@@ -34,6 +34,7 @@ local importWidget : DockWidgetPluginGui? = IMPORT_DATA.WIDGET
 local LIBRARIES = mainGui.Libraries
 local addSourceButton = LIBRARIES.Sources.addSourcesFrame.ImageButton
 local refreshButton = LIBRARIES.Sources.refreshFrame.ImageButton
+local wrenchButton = LIBRARIES.Sources.fixFrame.ImageButton
 local SCROLL_LIST = LIBRARIES.SourcesScroll
 
 local Favorites = SCROLL_LIST.Favorites
@@ -97,6 +98,8 @@ end
 local function createNewNode(data, currentSource)
 	local new = NODE:Clone()
 	local arrow = new.Header.Arrow
+	local instance = App.getInstanceByUUID(data.UUID)
+	local hoverTrigger = nil
 	
 	new:AddTag(data.UUID)
 	arrow.ImageTransparency = 1
@@ -104,11 +107,29 @@ local function createNewNode(data, currentSource)
 	new.Header.FolderName.Text = data.Name
 	new.Parent = SCROLL_LIST
 	
-	new.Header.FolderName.Activated:Connect(function() changeLibrary(data.UUID) end)
+	new.Header.FolderName.Activated:Connect(function()
+		changeLibrary(data.UUID)
+	end)
 	
 	if data.UUID == currentSource then
 		new.Header:AddTag("LibSelected")
 	end
+	
+	new.Header.FolderName.MouseEnter:Connect(function()
+		hoverTrigger = task.delay(1.5, function()
+			new.Header.FolderName.Text = instance and instance:GetFullName() or "Error"
+			new.Header.FolderName.TextScaled = true
+		end)
+	end)
+
+	new.Header.FolderName.MouseLeave:Connect(function()
+		if hoverTrigger then
+			task.cancel(hoverTrigger)
+			hoverTrigger = nil
+		end
+		new.Header.FolderName.Text = data.Name
+		new.Header.FolderName.TextScaled = false
+	end)
 	
 	return new
 end
@@ -152,7 +173,9 @@ Signals.selectedLibraryChanged:Connect(switchSelectLibrary)
 Signals.libraryTreeChanged:Connect(populateTree)
 Signals.onPluginUnloading:Connect(onPluginUnloading)
 
+-------------------------------------------
 local d = false
+local sourceThread = nil
 addSourceButton.Activated:Connect(function()
 	if d then return end
 	d = true
@@ -160,6 +183,20 @@ addSourceButton.Activated:Connect(function()
 	task.wait(.5)
 	d = false
 end)
+addSourceButton.Parent.MouseEnter:Connect(function()
+	sourceThread = task.delay(.3, function()
+		addSourceButton.Parent.moreInfo.Visible = true
+	end)
+end)
+addSourceButton.Parent.MouseLeave:Connect(function()
+	if sourceThread then
+		task.cancel(sourceThread)
+		sourceThread = nil
+	end
+	addSourceButton.Parent.moreInfo.Visible = false
+end)
+-------------------------------------------
+local refreshThread = nil
 refreshButton.Activated:Connect(function()
 	if d then return end
 	d = true
@@ -169,6 +206,38 @@ refreshButton.Activated:Connect(function()
 	task.wait(.7)
 	refreshButton.Parent.refreshImage.Rotation = -180
 	d = false
+end)
+refreshButton.Parent.MouseEnter:Connect(function()
+	refreshThread = task.delay(.3, function()
+		refreshButton.Parent.moreInfo.Visible = true
+	end)
+end)
+refreshButton.Parent.MouseLeave:Connect(function()
+	if refreshThread then
+		task.cancel(refreshThread)
+		refreshThread = nil
+	end
+	refreshButton.Parent.moreInfo.Visible = false
+end)
+-------------------------------------------
+local fixesThread = nil
+wrenchButton.Activated:Connect(function()
+	if d then return end
+	d = true
+	print("Does something")
+	d = false
+end)
+wrenchButton.Parent.MouseEnter:Connect(function()
+	fixesThread = task.delay(.3, function()
+		wrenchButton.Parent.moreInfo.Visible = true
+	end)
+end)
+wrenchButton.Parent.MouseLeave:Connect(function()
+	if fixesThread then
+		task.cancel(fixesThread)
+		fixesThread = nil
+	end
+	wrenchButton.Parent.moreInfo.Visible = false
 end)
 
 Favorites.Header.FolderName.Activated:Connect(function() changeLibrary("FAVORITES") end)

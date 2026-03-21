@@ -46,6 +46,7 @@ local alignToNormalButton = settingsSwitches.AlignToNormal.SwitchFrame.ButtonDot
 local sortByNameButton = settingsSwitches.SortBy.byNameButton
 local sortByInstanceButton = settingsSwitches.SortBy.byInstanceButton
 local autoAnchorButton = settingsSwitches.AutoAnchor.SwitchFrame.ButtonDot
+local instantSearchButton = settingsSwitches.InstantSearch.SwitchFrame.ButtonDot
 
 --LEFT ELEMENTS
 local LeftSegment = mainGui.Main.TopBar.LeftSegment
@@ -164,7 +165,7 @@ local function setSortMethod(method, init)
 		sortByNameButton:RemoveTag("Accent")
 		sortByNameButton:RemoveTag("Bold")
 	else
-		warn("What method is this? Report this to discord")
+		warn(">= Asset Vault: What method is this? Report this on the forum")
 		return
 	end
 	if not init then App.setSortBy(method) end
@@ -212,6 +213,7 @@ local function init()
 	setSwitchState(settingsSwitches.showInstanceColors.SwitchFrame, currentSettings.ShowInstanceColors)
 	setSwitchState(settingsSwitches.AlignToNormal.SwitchFrame, currentSettings.AlignToNormal)
 	setSwitchState(settingsSwitches.AutoAnchor.SwitchFrame, currentSettings.AutoAnchor)
+	setSwitchState(settingsSwitches.InstantSearch.SwitchFrame, currentSettings.InstantSearch)
 	setSortMethod(App.getSortBy(), true)
 	updateSelectedTopBarButton(topBarButtons[currentFilter])
 	
@@ -307,6 +309,7 @@ alignToNormalButton.Activated:Connect(function() toggleSwitch(settingsSwitches.A
 autoAnchorButton.Activated:Connect(function() toggleSwitch(settingsSwitches.AutoAnchor.SwitchFrame) end)
 sortByNameButton.Activated:Connect(function() setSortMethod("Name") end)
 sortByInstanceButton.Activated:Connect(function() setSortMethod("Instance") end)
+instantSearchButton.Activated:Connect(function() toggleSwitch(settingsSwitches.InstantSearch.SwitchFrame) end)
 
 settingsButton.Activated:Connect(toggleSettings)
 helpButton.Activated:Connect(function()
@@ -324,6 +327,9 @@ searchBox:GetPropertyChangedSignal("Text"):Connect(function()
 		searchBarImage:AddTag("SecondaryText")
 	else
 		searchBarImage:RemoveTag("SecondaryText")
+	end
+	if currentSettings.InstantSearch then
+		onSearchBoxUpdate(true)
 	end
 end)
 

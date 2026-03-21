@@ -76,6 +76,7 @@ local function onImportButtonClicked()
 	if firstFiltered then
 		importWidget.Enabled = not importWidget.Enabled
 		Vault.appendLibraries({firstFiltered})
+		Vault.save()
 		if App.getSource() == "None" then
 			Signals.updateGridTexts:Fire("NoSelection")
 		end
