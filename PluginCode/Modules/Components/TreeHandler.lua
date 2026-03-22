@@ -28,8 +28,10 @@ local previousUUIDSelected = nil
 
 local MAIN_DATA = Pathfinder:get("MAIN")
 local IMPORT_DATA = Pathfinder:get("IMPORT")
+local SETTINGS_DATA = Pathfinder:get("SETTINGS")
 local mainGui : mainSchema = MAIN_DATA.UI
 local importWidget : DockWidgetPluginGui? = IMPORT_DATA.WIDGET
+local settingsWidget : DockWidgetPluginGui? = SETTINGS_DATA.WIDGET
 
 local LIBRARIES = mainGui.Libraries
 local addSourceButton = LIBRARIES.Sources.addSourcesFrame.ImageButton
@@ -116,7 +118,7 @@ local function createNewNode(data, currentSource)
 	end
 	
 	new.Header.FolderName.MouseEnter:Connect(function()
-		hoverTrigger = task.delay(1.5, function()
+		hoverTrigger = task.delay(1, function()
 			new.Header.FolderName.Text = instance and instance:GetFullName() or "Error"
 			new.Header.FolderName.TextScaled = true
 		end)
@@ -224,7 +226,10 @@ local fixesThread = nil
 wrenchButton.Activated:Connect(function()
 	if d then return end
 	d = true
-	print("Does something")
+	
+	settingsWidget.Enabled = not settingsWidget.Enabled
+	task.wait(.5)
+
 	d = false
 end)
 wrenchButton.Parent.MouseEnter:Connect(function()
@@ -240,8 +245,11 @@ wrenchButton.Parent.MouseLeave:Connect(function()
 	wrenchButton.Parent.moreInfo.Visible = false
 end)
 
+-------------------------------------------
 Favorites.Header.FolderName.Activated:Connect(function() changeLibrary("FAVORITES") end)
 Recent.Header.FolderName.Activated:Connect(function() changeLibrary("RECENT") end)
 Toolbox.Header.FolderName.Activated:Connect(function() changeLibrary("TOOLBOX") end)
+
+Signals.resetInitialized:Connect(clearTree)
 
 return Tree

@@ -13,5 +13,7 @@ return {
 	["selectedLibraryChanged"] = Signal(), --UUID
 	["onPluginUnloading"] = Signal(),
 	["updateGridTexts"] = Signal(),
-	["refreshClicked"] = Signal()
+	["refreshClicked"] = Signal(),
+	["resetInitialized"] = Signal()
+
 }

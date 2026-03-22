@@ -28,7 +28,9 @@ local Signals = require(MODULES.API.Signals)
 local MAIN_DATA = Pathfinder:get("MAIN")
 local HELP_DATA = Pathfinder:get("HELP")
 local mainGui : mainSchema = MAIN_DATA.UI
-local helpWidget = HELP_DATA.WIDGET
+
+local mainWidget : DockWidgetPluginGui? = MAIN_DATA.WIDGET
+local helpWidget : DockWidgetPluginGui? = HELP_DATA.WIDGET
 
 local currentSettings = App.getSettings()
 local currentFilter = App.getCategoryFilter()
@@ -81,6 +83,8 @@ local isSliderActive = false
 local inputUpdateConn
 local inputReleaseConn
 
+local AVFocused = true
+
 -----------------------------
 -- CONSTANTS --
 -----------------------------
@@ -113,7 +117,7 @@ local function toggleSettings()
 		settingsButton:RemoveTag("Secondary")
 	end
 	
-	task.wait(.6)
+	task.wait(.5)
 	
 	settingsButton.Rotation = -180
 	debounce = false
@@ -138,6 +142,7 @@ local function toggleSwitch(switchFrame:Frame)
 	local attrib = switchFrame:GetAttribute("SETTING_NAME")
 	if not attrib then
 		warn("AssetVault - Failed to find attribute 'SETTING_NAME' in switchFrame, add it.")
+		return
 	end
 	
 	local newState = not currentSettings[attrib]
@@ -188,6 +193,9 @@ local function updateSelectedTopBarButton(button:TextButton)
 		App.setCategoryFilter(category)
 	end
 end
+
+local function focus() AVFocused = true end
+local function unfocus() AVFocused = false end
 -----------------------------
 -- MAIN --
 -----------------------------
@@ -218,6 +226,19 @@ local function init()
 	updateSelectedTopBarButton(topBarButtons[currentFilter])
 	
 	slider.Full.Size = UDim2.new(App.getGridSize(), 0, .2, 0)
+
+	mainWidget.WindowFocused:Connect(focus)
+	mainWidget.WindowFocusReleased:Connect(unfocus)
+
+	mainGui.InputBegan:Connect(function(input)
+		if not AVFocused or input.UserInputState == Enum.UserInputState.End then return end
+		if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Slash and not searchBox:IsFocused() then
+			searchBox:CaptureFocus()
+			searchBox:GetPropertyChangedSignal("Text"):Wait()
+			searchBox.Text = string.sub(searchBox.Text, 0, #searchBox.Text - 1)
+		end
+	end)
+
 end
 
 local function onGridTextUpdate(txtType)
@@ -238,6 +259,7 @@ local function onSearchBoxUpdate(enterPressed)
 		searchBarImage:AddTag("SecondaryText")
 		return 
 	end
+	
 	local rawText = searchBox.Text
 	
 	local cleanText = string.gsub(rawText, "[;,'\"~`]", "")
@@ -249,8 +271,6 @@ end
 
 --Sliders
 local function updateSlider(position)
-	
-	print("MouseX",position.X)
 	local output = (position.X - slider.AbsolutePosition.X) / slider.AbsoluteSize.X
 	output = math.clamp(output, 0, 1)
 	
@@ -340,5 +360,7 @@ audioButton.Activated:Connect(function() updateSelectedTopBarButton(audioButton)
 imagesButton.Activated:Connect(function() updateSelectedTopBarButton(imagesButton) end)
 
 sliderTrigger.MouseButton1Down:Connect(activateSlider)
+
+Signals.resetInitialized:Connect(init)
 
 return Bar

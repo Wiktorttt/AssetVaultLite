@@ -42,7 +42,7 @@ Asset Vault is available in two versions. The Lite / Demo version is free and co
 ## 🚀 Installation
 
 ### Option 1: Itch.io
-1. Purchase and download the latest `AssetVault.rbxmx` file from the [Itch.io](https://google.com) page.
+1. Purchase and download the latest `AssetVault.rbxmx` file from the [Itch.io](https://wiktorttt.itch.io/asset-vault) page.
 2. Open Roblox Studio.
 3. Drag and drop the `.rbxmx` file into the `Plugins` folder located in your local Roblox Studio directory (`%localappdata%\Roblox\Plugins`).
 4. Refresh Roblox Studio

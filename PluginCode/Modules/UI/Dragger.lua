@@ -14,6 +14,7 @@ local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 local Selection = game:GetService("Selection")
+local DraggerServ = game:GetService("DraggerService")
 
 -----------------------------
 -- DEPENDENCIES --
@@ -39,6 +40,7 @@ local targetFrame = CURRENT_LIBRARY.Grid
 local overlayParent = CURRENT_LIBRARY.DraggerOverlay
 local selectionBox = overlayParent.selectionBox
 local conn = nil
+local conn2 = nil
 local currentSettings = {}
 
 -- UI Selection State
@@ -161,6 +163,16 @@ local function generateSpiralOffsets(count: number, stepSize: number)
 	return offsets
 end
 
+local function snapPosition(position: Vector3, gridSize: number)
+	if gridSize <= 0 then return position end
+
+	return Vector3.new(
+		math.round(position.X / gridSize) * gridSize,
+		math.round(position.Y / gridSize) * gridSize,
+		math.round(position.Z / gridSize) * gridSize
+	)
+end
+
 local function getSurfaceData(unitRay: Ray, excludeInstances)
 	local raycastParams = RaycastParams.new()
 	raycastParams.FilterType = Enum.RaycastFilterType.Exclude
@@ -197,6 +209,32 @@ local function finishWorkspaceDrag()
 	Selection:Set(clonedInstances)
 	ChangeHistoryService:SetWaypoint("Inserted AssetVault Instances")
 	cleanupWorkspaceDrag()
+end
+
+local function deleteInput(input:InputObject)
+	if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+	if input.KeyCode ~= Enum.KeyCode.Delete then return end
+
+	Selection:Set{}
+
+	local instancesDeleted = false
+
+	for _, child in targetFrame:GetChildren() do
+		if not child:IsA("GuiObject") then continue end
+		if not child:HasTag("ObjSelected") then continue end
+
+		local ins = getInstanceByFrame(child)
+		if ins then 
+			ins.Parent = nil 
+			instancesDeleted = true
+		end
+
+		child:Destroy()
+	end
+
+	if instancesDeleted then
+		ChangeHistoryService:SetWaypoint("Deleted AssetVault Instances")
+	end
 end
 
 -----------------------------
@@ -339,7 +377,11 @@ function Dragger.startWorkspaceDrag(selectedInstances)
 		if not pluginMouse then return end
 		
 		local targetPos, surfaceNormal = getSurfaceData(pluginMouse.UnitRay, clonedInstances)
-
+		
+		if DraggerServ.LinearSnapEnabled then
+			targetPos = snapPosition(targetPos, DraggerServ.LinearSnapIncrement)
+		end
+		
 		local alignToNormal = currentSettings.AlignToNormal ~= false
 
 		local upVector = alignToNormal and surfaceNormal or Vector3.yAxis
@@ -380,7 +422,7 @@ function Dragger.startWorkspaceDrag(selectedInstances)
 end
 
 -- Visual dragger on UI
-local function onInputBegan(input)
+local function onInputBegan(input:InputObject)
 	if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
 
 	cleanupDrag()
@@ -424,6 +466,7 @@ function Dragger.init(instance)
 	pluginIns = instance
 	pluginMouse = instance:GetMouse()
 	conn = targetFrame.InputBegan:Connect(onInputBegan)
+	conn2 = targetFrame.InputBegan:Connect(deleteInput)
 	currentSettings = App.getSettings()
 end
 
@@ -431,6 +474,10 @@ local function onPluginUnloading()
 	if conn then
 		conn:Disconnect()
 		conn = nil
+	end
+	if conn2 then
+		conn2:Disconnect()
+		conn2 = nil
 	end
 	cancelWorkspaceDrag()
 end
@@ -441,6 +488,12 @@ end
 Signals.onPluginUnloading:Connect(onPluginUnloading)
 Signals.settingsChanged:Connect(function(newSettings)
 	currentSettings = newSettings
+end)
+
+ChangeHistoryService.OnUndo:Connect(function(waypoint)
+	if waypoint == "Deleted AssetVault Instances" then
+		Signals.refreshClicked:Fire()
+	end
 end)
 
 return Dragger

@@ -9,7 +9,6 @@ local ASSETS = env.Assets
 -----------------------------
 -- SERVICES --
 -----------------------------
-local HTTP = game:GetService("HttpService")
 local Collection = game:GetService("CollectionService")
 
 -----------------------------
@@ -30,7 +29,7 @@ local currentInstances = {}
 -----------------------------
 -- CONSTANTS --
 -----------------------------
-local defaultSettings = {
+App.defaultSettings = {
 	["CurrentSource"] = "None",
 	["CurrentCategoryFilter"] = "All",
 	["SearchQuery"] = "",
@@ -61,7 +60,7 @@ local function checkIfSourceStillValid(fullData)
 end
 
 local function reconcile(target)
-	for k, v in pairs(defaultSettings) do
+	for k, v in pairs(App.defaultSettings) do
 		if target[k] == nil then
 			target[k] = v
 		elseif type(target[k]) == "table" and type(v) == "table" then
@@ -83,7 +82,7 @@ end
 -----------------------------
 function App.setSource(newUUID)
 	if userSettings.CurrentSource == newUUID then return end
-	assert(type(newUUID) == "string", "Not valid UUID as source")
+	assert(type(newUUID) == "string")
 	userSettings.CurrentSource = newUUID
 	Signals.sourceChanged:Fire(newUUID)
 end
@@ -188,10 +187,10 @@ function App.getSettings()
 		["InstantSearch"] = userSettings.InstantSearch
 	}
 
-	if array.ShowInstanceColors == nil then array.ShowInstanceColors = defaultSettings.ShowInstanceColors end
-	if array.AlignToNormal == nil then array.AlignToNormal = defaultSettings.AlignToNormal end
-	if array.AutoAnchor == nil then array.AutoAnchor = defaultSettings.AutoAnchor end
-	if array.InstantSearch == nil then array.InstantSearch = defaultSettings.InstantSearch end
+	if array.ShowInstanceColors == nil then array.ShowInstanceColors = App.defaultSettings.ShowInstanceColors end
+	if array.AlignToNormal == nil then array.AlignToNormal = App.defaultSettings.AlignToNormal end
+	if array.AutoAnchor == nil then array.AutoAnchor = App.defaultSettings.AutoAnchor end
+	if array.InstantSearch == nil then array.InstantSearch = App.defaultSettings.InstantSearch end
 
 	return array
 end
@@ -205,7 +204,7 @@ end
 
 function App.saveData()
 	if not pluginIns then
-		warn(`>| AssetVault {env.Config:GetAttribute("version")} not initalized. Report the bug to discord. Data will not be saved.`)
+		warn(`>| AssetVault {env.Config:GetAttribute("version")} not initalized. Report the bug on the forum. Data will not be saved.`)
 		return
 	end
 	
@@ -215,7 +214,7 @@ end
 
 function App.loadData()
 	local savedData = pluginIns:GetSetting("userSettings")
-	local activeSettings = table.clone(defaultSettings)
+	local activeSettings = table.clone(App.defaultSettings)
 
 	if savedData and type(savedData) == "table" then
 		activeSettings = reconcile(savedData)
@@ -233,6 +232,8 @@ function App.loadData()
 	App.setSearchQuery(activeSettings.SearchQuery)
 	App.setSortType(activeSettings.SortType)
 	App.setGridSize(activeSettings.GridSize)
+	
+	--print("Loaded settings", activeSettings)
 end
 
 local function onPluginUnloading()
