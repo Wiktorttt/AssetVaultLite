@@ -1,6 +1,6 @@
 # Asset Vault for Roblox Studio
 
-[![Version](https://img.shields.io/badge/Version-1.0.5-blue.svg)]()
+[![Version](https://img.shields.io/badge/Version-1.1.0-blue.svg)]()
 [![License](https://img.shields.io/badge/License-Proprietary_Commercial-green.svg)](https://en.wikipedia.org/wiki/Proprietary_software)
 [![Creator Store](https://img.shields.io/badge/Get_Lite_on-Creator_Store-orange.svg)](https://create.roblox.com/store/asset/90655683119542/Asset-Vault-Lite)
 [![Creator Store Pro](https://img.shields.io/badge/Get_Pro_on-Creator_Store-orange.svg)](https://create.roblox.com/store/asset/95303596935746/Asset-Vault)
