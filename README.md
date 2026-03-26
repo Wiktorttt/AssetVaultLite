@@ -1,6 +1,6 @@
 # Asset Vault for Roblox Studio
 
-[![Version](https://img.shields.io/badge/Version-1.1.0-blue.svg)]()
+[![Version](https://img.shields.io/badge/Version-1.1.5-blue.svg)]()
 [![License](https://img.shields.io/badge/License-Proprietary_Commercial-green.svg)](https://en.wikipedia.org/wiki/Proprietary_software)
 [![Creator Store](https://img.shields.io/badge/Get_Lite_on-Creator_Store-orange.svg)](https://create.roblox.com/store/asset/90655683119542/Asset-Vault-Lite)
 [![Creator Store Pro](https://img.shields.io/badge/Get_Pro_on-Creator_Store-orange.svg)](https://create.roblox.com/store/asset/95303596935746/Asset-Vault)
@@ -13,11 +13,18 @@ Asset Vault is a custom asset management system for Roblox Studio, designed to r
 
 ## ⚙️ Features
 
-* **Visual Grid Interface:** Browse your Models with auto-generated 3D viewport thumbnails.
+* **Visual Grid Interface:** Browse your Models with 3D viewport thumbnails.
 * **Rapid Deployment:** Insert assets into the workspace via drag-and-drop or system.
-* **Smart Placement Rules:** Automatically align placed assets to surface normals (optional).
-* **Advanced Filtering & Search:** Instantly locate assets using text search and category filters.
+* **Smart Placement:** Automatically align placed assets to surface normals (optional), snap to grid and rotate them using default Roblox Studio Settings
+* **Advanced Filtering:** Locate assets from Vaults using text search and category filters.
 * **Quick Access Tabs:** Quickly retrieve recently used items or pin frequently used assets to your Favorites.
+* **Right-Click Context Menu:** Batch Favorite, Rename (with sequential numbering), Move To, Copy AssetID, and Delete instances directly from the interface.
+* **Script Support:** Manage Script, LocalScript, and ModuleScript instances. Double-click to open in the Script Editor or inject code at your active cursor position.
+* **Keybinds Integration:** Multiselect using <kbd>Ctrl</kbd> and ability to drag across the UI to select multiple elements simultaneously. (yes you can drag and drop multiple assets at once). Use **Delete** and **/** for faster production.
+* **FAQ Page:** If you don’t know something, there might be an answer in the FAQ widget inside the plugin.
+* **Parent Override** - Select a folder/model from the explorer, from now on any dragged asset from the AV will land into that parent!
+* **Both Themes Compatibility:** You change the Studio to dark/light mode, it changes to dark/light mode.
+
 
 ---
 
