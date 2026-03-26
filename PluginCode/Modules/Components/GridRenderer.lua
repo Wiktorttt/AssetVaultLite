@@ -11,6 +11,8 @@ type mainSchema = typeof(ASSETS.AV_Main)
 -- SERVICES --
 -----------------------------
 local CollectionService = game:GetService("CollectionService")
+local StudioService = game:GetService("StudioService")
+local ScriptEditor = game:GetService("ScriptEditorService")
 
 -----------------------------
 -- DEPENDENCIES --
@@ -43,6 +45,7 @@ local currentSettings = nil
 
 local clickStartPos = nil
 local isClicking = false
+local lastClickTime = 0
 
 -----------------------------
 -- CONSTANTS --
@@ -57,8 +60,12 @@ local CLASS_PRIORITY = {
 	SurfaceAppearance = 4,
 	Decal = 5,
 	Texture = 6,
-	Sound = 7
+	Sound = 7,
+	Script = 8,
+	ModuleScript = 9,
+	LocalScript = 10
 }
+
 local DEFAULT_PRIORITY = 99 -- Assign a high number for classes not explicitly listed
 
 local CLASS_COLORS = {
@@ -72,6 +79,9 @@ local CLASS_COLORS = {
 	Decal = Color3.fromRGB(255, 150, 80),
 	Texture = Color3.fromRGB(255, 150, 80),
 	Sound = Color3.fromRGB(255, 100, 100),
+	Script = Color3.fromRGB(75, 204, 133),
+	ModuleScript = Color3.fromRGB(69, 207, 209),
+	LocalScript = Color3.fromRGB(57, 134, 176),
 	DEFAULT = Color3.fromRGB(255, 255, 255)
 }
 
@@ -79,6 +89,8 @@ local MAX_GRID_HEIGHT = 216
 local MAX_GRID_WIDTH = 180
 local MIN_GRID_HEIGHT = 90
 local MIN_GRID_WIDTH = 75
+
+local DOUBLE_CLICK_THRESHOLD = 0.4
 
 -----------------------------
 -- HELPER FUNCTIONS --
@@ -132,6 +144,30 @@ local function updateAssetCounter()
 
 	assetCounterText.Text = ` {#children - 2} items`
 end
+
+
+local function insertCodeAtCursor(scriptInstance)
+	if not scriptInstance then return end
+	local activeScript = StudioService.ActiveScript
+	if not activeScript then
+		pcall(function() return ScriptEditor:OpenScriptDocumentAsync(scriptInstance) end)
+	end
+
+	local document : ScriptDocument = ScriptEditor:FindScriptDocument(activeScript)
+	if not document then return end
+
+	local source = scriptInstance.Source
+
+	local successStart, startLine, startChar = pcall(function() return document:GetSelectionStart() end)
+	local successEnd, endLine, endChar = pcall(function() return document:GetSelectionEnd() end)
+
+	if successStart and successEnd then
+		document:EditTextAsync(source, startLine, startChar, endLine, endChar)
+	else
+		warn(`>= Asset Vault {env.Config:GetAttribute("version")} - Failed to read cursor position in Script Editor.`)
+	end
+end
+
 -----------------------------
 -- MAIN --
 -----------------------------
@@ -141,6 +177,7 @@ local function createObjFrame(obj:Instance)
 		if currentFilter == "Meshes" and not (obj:IsA("BasePart") or obj:IsA("SurfaceAppearance")) then return end
 		if currentFilter == "Audio" and not obj:IsA("Sound") then return end
 		if currentFilter == "Images" and not (obj:IsA("Decal") or obj:IsA("Texture")) then return end
+		if currentFilter == "Scripts" and not (obj:IsA("Script") or obj:IsA("ModuleScript")) then return end
 	end
 
 	if currentSearchQuery and not string.find(obj.Name:lower(), currentSearchQuery:lower()) then return end
@@ -207,6 +244,20 @@ local function createObjFrame(obj:Instance)
 		return new
 	end
 	
+	if obj:IsA("Script") or obj:IsA("ModuleScript") then
+		local img = new.Background.Image
+		img.Image = "rbxassetid://101167137788205"
+		img.Visible = true
+		VP.Visible = false
+
+		if obj.ClassName == "Script" then img.ImageColor3 = CLASS_COLORS.Script
+		elseif obj.ClassName == "ModuleScript" then img.ImageColor3 = CLASS_COLORS.ModuleScript
+		elseif obj.ClassName == "LocalScript" then img.ImageColor3 = CLASS_COLORS.LocalScript end
+
+		img.Size = UDim2.fromScale(.8,.8)
+		return new
+	end
+	
 	return nil
 end
 
@@ -227,7 +278,7 @@ local function onSourceChanged()
 	if inBuiltFolder and inBuiltSource == "TOOLBOX" then
 		cleanupGrid()
 		Signals.updateGridTexts:Fire("TEMP")
-		--potential toolbox update
+		--potential toolbox update maybe if roblox allows duh
 		return
 	end
 	if source == "None" then return end
@@ -274,27 +325,43 @@ local function onSourceChanged()
 			end
 			
 			local wasSelectedOnDown = false
+			
+			if obj:IsA("ModuleScript") or obj:IsA("Script") then
+				new.ObjButton.InputBegan:Connect(function(input:InputObject)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 then
+						local currentTime = os.clock()
 
-			new.ObjButton.InputBegan:Connect(function(input:InputObject)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 then
-					isClicking = true
-					clickStartPos = input.Position
-					wasSelectedOnDown = new:HasTag("ObjSelected")
+						if currentTime - lastClickTime <= DOUBLE_CLICK_THRESHOLD then
+							local ins : Script = obj 
+							if not ins then return end
 
-					if not wasSelectedOnDown then
-						updateSelectionOnObjectClick(new, input, true)
+							insertCodeAtCursor(ins)
+
+							lastClickTime = 0
+						else
+							lastClickTime = currentTime
+						end
+
+						wasSelectedOnDown = new:HasTag("ObjSelected")
+
+						if not wasSelectedOnDown then
+							updateSelectionOnObjectClick(new, input, true)
+						end
 					end
-					
-				elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
-					if obj:HasTag("AV_FAVORITED") then
-						new.Star.Visible = false
-						obj:RemoveTag("AV_FAVORITED")
-					else
-						new.Star.Visible = true
-						obj:AddTag("AV_FAVORITED")
+				end)
+			else
+				new.ObjButton.InputBegan:Connect(function(input:InputObject)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 then
+						isClicking = true
+						clickStartPos = input.Position
+						wasSelectedOnDown = new:HasTag("ObjSelected")
+
+						if not wasSelectedOnDown then
+							updateSelectionOnObjectClick(new, input, true)
+						end
 					end
-				end
-			end)
+				end)
+			end
 
 			new.ObjButton.InputChanged:Connect(function(input)
 				if isClicking and input.UserInputType == Enum.UserInputType.MouseMovement then
@@ -380,6 +447,12 @@ Signals.gridSizeChanged:Connect(onGridSizeChanged)
 Signals.refreshClicked:Connect(onSourceChanged)
 Signals.settingsChanged:Connect(function(arr)
 	currentSettings = arr
+end)
+Signals.resetInitialized:Connect(cleanupGrid)
+
+GRID_LAYOUT:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	local contentHeight = GRID_LAYOUT.AbsoluteContentSize.Y
+	GRID_SCROLL.CanvasSize = UDim2.new(0, 0, 0, contentHeight + 50)
 end)
 
 return Grid

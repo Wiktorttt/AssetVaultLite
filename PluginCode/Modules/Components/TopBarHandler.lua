@@ -28,7 +28,6 @@ local Signals = require(MODULES.API.Signals)
 local MAIN_DATA = Pathfinder:get("MAIN")
 local HELP_DATA = Pathfinder:get("HELP")
 local mainGui : mainSchema = MAIN_DATA.UI
-
 local mainWidget : DockWidgetPluginGui? = MAIN_DATA.WIDGET
 local helpWidget : DockWidgetPluginGui? = HELP_DATA.WIDGET
 
@@ -49,6 +48,7 @@ local sortByNameButton = settingsSwitches.SortBy.byNameButton
 local sortByInstanceButton = settingsSwitches.SortBy.byInstanceButton
 local autoAnchorButton = settingsSwitches.AutoAnchor.SwitchFrame.ButtonDot
 local instantSearchButton = settingsSwitches.InstantSearch.SwitchFrame.ButtonDot
+local autoNumberButton = currentLibrary.RMBOverlay.RenameGui.Switch.switchFrame.ButtonDot
 
 --LEFT ELEMENTS
 local LeftSegment = mainGui.Main.TopBar.LeftSegment
@@ -60,12 +60,14 @@ local modelsButton = LeftSegment.SortModelsButton
 local meshesButton = LeftSegment.SortMeshesButton
 local audioButton = LeftSegment.SortAudioButton
 local imagesButton = LeftSegment.SortImagesButton
+local scriptsButton = LeftSegment.SortScriptsButton
 local topBarButtons = {
 	["All"] = allButton,
 	["Models"] = modelsButton,
 	["Meshes"] = meshesButton,
 	["Audio"] = audioButton,
-	["Images"] = imagesButton
+	["Images"] = imagesButton,
+	["Scripts"] = scriptsButton
 }
 
 --RIGHT ELEMENTS
@@ -222,6 +224,7 @@ local function init()
 	setSwitchState(settingsSwitches.AlignToNormal.SwitchFrame, currentSettings.AlignToNormal)
 	setSwitchState(settingsSwitches.AutoAnchor.SwitchFrame, currentSettings.AutoAnchor)
 	setSwitchState(settingsSwitches.InstantSearch.SwitchFrame, currentSettings.InstantSearch)
+	setSwitchState(currentLibrary.RMBOverlay.RenameGui.Switch.switchFrame, currentSettings.AutoAddNumbers)
 	setSortMethod(App.getSortBy(), true)
 	updateSelectedTopBarButton(topBarButtons[currentFilter])
 	
@@ -330,6 +333,7 @@ autoAnchorButton.Activated:Connect(function() toggleSwitch(settingsSwitches.Auto
 sortByNameButton.Activated:Connect(function() setSortMethod("Name") end)
 sortByInstanceButton.Activated:Connect(function() setSortMethod("Instance") end)
 instantSearchButton.Activated:Connect(function() toggleSwitch(settingsSwitches.InstantSearch.SwitchFrame) end)
+autoNumberButton.Activated:Connect(function() toggleSwitch(currentLibrary.RMBOverlay.RenameGui.Switch.switchFrame) end)
 
 settingsButton.Activated:Connect(toggleSettings)
 helpButton.Activated:Connect(function()
@@ -358,6 +362,7 @@ modelsButton.Activated:Connect(function() updateSelectedTopBarButton(modelsButto
 meshesButton.Activated:Connect(function() updateSelectedTopBarButton(meshesButton) end)
 audioButton.Activated:Connect(function() updateSelectedTopBarButton(audioButton) end)
 imagesButton.Activated:Connect(function() updateSelectedTopBarButton(imagesButton) end)
+scriptsButton.Activated:Connect(function() updateSelectedTopBarButton(scriptsButton) end)
 
 sliderTrigger.MouseButton1Down:Connect(activateSlider)
 

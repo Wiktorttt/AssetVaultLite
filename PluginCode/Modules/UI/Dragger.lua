@@ -15,6 +15,8 @@ local RunService = game:GetService("RunService")
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 local Selection = game:GetService("Selection")
 local DraggerServ = game:GetService("DraggerService")
+local Collection = game:GetService("CollectionService")
+local CAS = game:GetService("ContextActionService")
 
 -----------------------------
 -- DEPENDENCIES --
@@ -116,9 +118,21 @@ end
 
 local function getInstanceByFrame(gridFrame:Frame)
 	local source, source_instance = App.getSource()
-	if not source_instance then return end
+	
 	local name = gridFrame:GetAttribute("TRUE_NAME") or gridFrame.TextLabel.Text
 	
+	if source == "FAVORITES" then
+		for _, obj in Collection:GetTagged("AV_FAVORITED") do
+			if obj.Name == name then
+				return obj
+			end
+		end
+		warn("AV: Failed to find favorited object with name ", name)
+		return nil
+	end
+
+	if not source_instance then return end
+
 	local obj = source_instance:FindFirstChild(name)
 	if obj then
 		return obj
@@ -192,6 +206,7 @@ local function cleanupWorkspaceDrag()
 		workspaceDragUpdateConn:Disconnect()
 		workspaceDragUpdateConn = nil
 	end
+	
 	draggingData = {}
 	clonedInstances = {}
 end
@@ -207,13 +222,18 @@ local function finishWorkspaceDrag()
 	if not isDraggingToWorkspace then return end
 
 	Selection:Set(clonedInstances)
+	
+	CAS:UnbindAction("AssetVault_Rotate")
+	
 	ChangeHistoryService:SetWaypoint("Inserted AssetVault Instances")
 	cleanupWorkspaceDrag()
 end
 
 local function deleteInput(input:InputObject)
-	if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
-	if input.KeyCode ~= Enum.KeyCode.Delete then return end
+	if input then
+		if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+		if input.KeyCode ~= Enum.KeyCode.Delete then return end
+	end
 
 	Selection:Set{}
 
@@ -241,13 +261,21 @@ end
 -- CORE --
 -----------------------------
 --Workspace dragger
-function Dragger.getSelectedInstances()
+function Dragger.getSelectedInstances(withFrames)
+	withFrames = withFrames or false
+	
 	local selectedInstances = {}
 	for _, child in targetFrame:GetChildren() do
 		if not child:IsA("GuiObject") then continue end
 		if not child:HasTag("ObjSelected") then continue end
 		local ins = getInstanceByFrame(child)
-		if ins then table.insert(selectedInstances, ins) end
+		if ins then
+			if withFrames then
+				table.insert(selectedInstances, {child, ins})
+			else
+				table.insert(selectedInstances, ins)
+			end
+		end
 	end
 	return selectedInstances
 end
@@ -263,8 +291,29 @@ function Dragger.startWorkspaceDrag(selectedInstances)
 	local applyAutoAnchor = currentSettings.AutoAnchor
 	local targetParent = workspace
 	local currentSelection = Selection:Get()
+	local currentDragRotation = 0
 	local firstFolder, firstModel
 	local isUserSelection = true
+	
+	CAS:BindAction("AssetVault_Rotate", function(actionName, inputState, input)
+		if inputState == Enum.UserInputState.Change then
+			local increment = 3
+
+			if DraggerServ.AngleSnapEnabled then
+				increment = DraggerServ.AngleSnapIncrement
+			end
+
+			if input.Position.Z > 0 then
+				currentDragRotation += math.rad(increment)
+			elseif input.Position.Z < 0 then
+				currentDragRotation -= math.rad(increment)
+			end
+
+			return Enum.ContextActionResult.Sink
+		end
+
+		return Enum.ContextActionResult.Pass
+	end, false, Enum.UserInputType.MouseWheel)
 	
 	if #currentSelection > 0 and #clonedInstances > 0 then
 		if currentSelection[1] == clonedInstances[1] then
@@ -334,6 +383,8 @@ function Dragger.startWorkspaceDrag(selectedInstances)
 				local instClone = instance:Clone()
 				instClone.Parent = clone
 			end
+		elseif instance:IsA("Script") or instance:IsA("ModuleScript") then
+			continue
 		else
 			
 			clone = instance:Clone()
@@ -377,7 +428,6 @@ function Dragger.startWorkspaceDrag(selectedInstances)
 		if not pluginMouse then return end
 		
 		local targetPos, surfaceNormal = getSurfaceData(pluginMouse.UnitRay, clonedInstances)
-		
 		if DraggerServ.LinearSnapEnabled then
 			targetPos = snapPosition(targetPos, DraggerServ.LinearSnapIncrement)
 		end
@@ -397,7 +447,8 @@ function Dragger.startWorkspaceDrag(selectedInstances)
 
 		for _, data in ipairs(draggingData) do
 			local finalCFrame = baseCFrame 
-				* CFrame.new(data.localOffset) 
+				* CFrame.new(data.localOffset)
+				* CFrame.Angles(0, currentDragRotation, 0)
 				* CFrame.new(0, data.yOffset, 0)
 
 			if data.clone:IsA("Model") then
@@ -468,6 +519,7 @@ function Dragger.init(instance)
 	conn = targetFrame.InputBegan:Connect(onInputBegan)
 	conn2 = targetFrame.InputBegan:Connect(deleteInput)
 	currentSettings = App.getSettings()
+	
 end
 
 local function onPluginUnloading()
@@ -491,7 +543,7 @@ Signals.settingsChanged:Connect(function(newSettings)
 end)
 
 ChangeHistoryService.OnUndo:Connect(function(waypoint)
-	if waypoint == "Deleted AssetVault Instances" then
+	if waypoint == "Deleted AssetVault Instances" or waypoint == "Renamed AssetVault Instances" or waypoint == "Moved AssetVault Instances" then
 		Signals.refreshClicked:Fire()
 	end
 end)

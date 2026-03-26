@@ -39,7 +39,8 @@ App.defaultSettings = {
 	["AlignToNormal"] = true,
 	["AutoAnchor"] = true,
 	["GridSize"] = .5,
-	["InstantSearch"] = false
+	["InstantSearch"] = false,
+	["AutoAddNumbers"] = true
 }
 
 -----------------------------
@@ -137,6 +138,11 @@ function App.setSettings(array)
 		userSettings.InstantSearch = array.InstantSearch
 		changed = true
 	end
+	if array.AutoAddNumbers ~= nil then
+		userSettings.AutoAddNumbers = array.AutoAddNumbers
+		changed = true
+	end
+
 	if changed then
 		Signals.settingsChanged:Fire(array)
 		App.saveData()
@@ -184,13 +190,15 @@ function App.getSettings()
 		["ShowInstanceColors"] = userSettings.ShowInstanceColors,
 		["AlignToNormal"] = userSettings.AlignToNormal,
 		["AutoAnchor"] = userSettings.AutoAnchor,
-		["InstantSearch"] = userSettings.InstantSearch
+		["InstantSearch"] = userSettings.InstantSearch,
+		["AutoAddNumbers"] = userSettings.AutoAddNumbers
 	}
 
 	if array.ShowInstanceColors == nil then array.ShowInstanceColors = App.defaultSettings.ShowInstanceColors end
 	if array.AlignToNormal == nil then array.AlignToNormal = App.defaultSettings.AlignToNormal end
 	if array.AutoAnchor == nil then array.AutoAnchor = App.defaultSettings.AutoAnchor end
 	if array.InstantSearch == nil then array.InstantSearch = App.defaultSettings.InstantSearch end
+	if array.AutoAddNumbers == nil then array.AutoAddNumbers = App.defaultSettings.AutoAddNumbers end
 
 	return array
 end

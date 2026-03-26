@@ -58,7 +58,6 @@ local REFRESH_INFO = TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirecti
 -- HELPER FUNCTIONS --
 -----------------------------
 local function changeLibrary(UUID)
-	--print("Firing selectedLibraryChanged, UUID: ", UUID)
 	Signals.selectedLibraryChanged:Fire(UUID)
 end
 
